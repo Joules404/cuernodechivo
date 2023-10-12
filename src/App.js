@@ -177,45 +177,6 @@ const Body = function (props) {
   );
 }
 
-// function MathEquation() {
-//   useEffect(() => {
-//     const script = document.createElement('script');
-//     script.type = 'text/javascript';
-//     script.async = true;
-//     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML';
-//     script.onload = function () {
-//       // MathJax is loaded and ready for use
-//       window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub]);
-//     };
-
-//     document.head.appendChild(script);
-
-//     return () => {
-//       document.head.removeChild(script);
-//     };
-//   }, []);
-
-//   return (
-//     <div>
-//       <p>
-//       Here's a fraction: \( \frac{1}{3} \)
-//       </p>
-//     </div>
-//   );
-// }
-
-// const MathFormula = function () {
-//   return (
-//     <div>
-//       <MathJax.Provider>
-//         <div>
-//           Net Words Per Minute Formula:
-//           <MathComponent tex={String.raw`WPM = \frac{\text{Total Words Typed}}{\text{Time (min)}}`} />
-//         </div>
-//       </MathJax.Provider>
-//     </div>
-//   );
-// };
 
 
 export default App;
