@@ -26,7 +26,7 @@ const Body = function () {
   const [includePunctuation, setIncludePunctuation] = useState(false)
   const [includeNumbers, setIncludeNumbers] = useState(false)
   const [newWords, setNewWords] = useState(false)
-
+  const [finished,setFinished] = useState(false)
   const [randomWords, setRandomWords] = useState('')
   const [numberOfDesiredWords, setNumberOfDesiredWords] = useState(15)
   useEffect(()=>{
@@ -67,13 +67,11 @@ const Body = function () {
       }
       setTimerActive(false);
       setReadOnly(true)
-      const allTypedEntries = correct + incorrect;
-      const uncorrectedErrors = incorrect;
-      const time = duration / 60;
-      const netwpm = ((allTypedEntries/5)-uncorrectedErrors)/time;
-      alert(Math.round(netwpm))
+      // const allTypedEntries = correct + incorrect;
+      // const uncorrectedErrors = incorrect;
+      // const time = duration / 60;
+      // const netwpm = ((allTypedEntries/5)-uncorrectedErrors)/time;
     }
-
     return () => {
       clearInterval(timerInterval);
     };
@@ -159,6 +157,7 @@ const Body = function () {
       </div>
     </div>
       <input
+        autoComplete='off'
         readOnly={readOnly}
         placeholder="Enter text here..."
         type="text"
@@ -169,16 +168,25 @@ const Body = function () {
           handleStart();
           compareTexts(e.target.value,randomWords)
           var words = e.target.value.trim().split(/\s+/);
+          var letters = e.target.value.split('')
           setWordCount(words.length);
+          console.log(letters.length)
+          console.log(randomWords.length)
+          if(letters.length === randomWords.length){
+            setReadOnly(true);
+            handleStop();
+            setTimerActive(false);
+          }
         }}
         style={{width:"40%", height:"2em"}}
       >
       </input>
-
       <br></br>
       <div class = "wrapper">
       <button onClick={()=>{
         setNewWords(!newWords)
+        restart()
+
       }}>Generate New Words</button>
       <button onClick={restart}>Restart</button>
       <button onClick={() => {
