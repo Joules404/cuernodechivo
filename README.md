@@ -1,70 +1,79 @@
-# Getting Started with Create React App
+Pitch (Goals & Non Goals)
+Site where users can track their typing speed (measured in words per minute) by typing a sequence of characters. 
+Users can also play against another user in a head-to-head format.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Features
+P0
+Something to type into
+Words that generate/bank pulled from
+Head-to-head -> type racing against each other
+Link-sharing to play (share link with friend)
+Basic version: having each person type and then post individually; results shown after.
+Basic stats: words-per-minute
+Restart option
+P1
+Statistics
+Time allotted
+Number of words correct & wrong -> accuracy
+Allows mistakes to be made
+Leaderboards (daily/weekly/monthly/yearly/all-time)
+Registration/Login
+Customize the amount of words to type (max) or time limit (some max limit)
+Presets; not full customization
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+P2
+Head-to-head extra features
+Online and accessible through site (not limited to link-sharing)
+Real-time update: live UI updates for progress.
+Users can see highlights of each other’s progress live.
+User Self-goals
+Non Goals
+No typing lessons or tutorials
+UX 
+CUJs
+P0
+Visual area
+Textbox to type into
+Textbox of passage to be typed
+Restart option
+Same visual area for head-to-head mode (basic version; non synchronous) 
+Basic statistics showing words-per-minute after they finish typing whatever passage is generated
+P1
+Leaderboards
+Daily, weekly, monthly, yearly, all-time
+Addendum to statistics post passage, showing mistakes & accuracy.
+Customize type-test settings
+Visual settings to adjust time, amount of words to enter.
+Preset settings- not full customization
+Profile
+Able to view their fastest wpm
+History of scores
+Average wpm (all-time + over specific time-period)
+P2
+Change color scheme of the site
+In case of P2 head-to-head, adjust visibility of other person
+Engineering Requirements
+Stack
+HTML, CSS, JS, MySQL, PHP, some user auth 
+HTTP or WebSocket (see below)
+Head-to-Head 
+How the multiplayer aspect will be handled.
+Option 1 - Each user completes a type-test, submits (post), and then can see their stats against each other at the end.
+Pros
+Easier to implement
+HTTP is easier
+Cons
+Unintuitive for the user
+It will look like they are just doing a type test and seeing extra stuff at the end
+Poor UI representation 
+Would not really feel like a head-to-head 
+Option 2 - Users type in the same box, at the same time, and can see their progress against each other. 
+Pros
+Intuitive for the user
+Looks great
+Cons
+Harder to implement
+Nobody wants to do WebSockets
+If something messes up (due to bad implementation) it will be obvious
+A lot harder to hide at this point
+Delay is the big issue
