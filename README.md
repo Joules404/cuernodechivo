@@ -1,8 +1,8 @@
-Pitch (Goals & Non Goals)
+#Pitch (Goals & Non Goals)
 Site where users can track their typing speed (measured in words per minute) by typing a sequence of characters. 
 Users can also play against another user in a head-to-head format.
 
-Features
+#Features
 P0
 Something to type into
 Words that generate/bank pulled from
@@ -11,7 +11,8 @@ Link-sharing to play (share link with friend)
 Basic version: having each person type and then post individually; results shown after.
 Basic stats: words-per-minute
 Restart option
-P1
+
+#P1
 Statistics
 Time allotted
 Number of words correct & wrong -> accuracy
@@ -21,7 +22,7 @@ Registration/Login
 Customize the amount of words to type (max) or time limit (some max limit)
 Presets; not full customization
 
-P2
+#P2
 Head-to-head extra features
 Online and accessible through site (not limited to link-sharing)
 Real-time update: live UI updates for progress.
@@ -29,16 +30,19 @@ Users can see highlights of each other’s progress live.
 User Self-goals
 Non Goals
 No typing lessons or tutorials
-UX 
-CUJs
-P0
+
+#UX 
+##CUJs
+
+#P0
 Visual area
 Textbox to type into
 Textbox of passage to be typed
 Restart option
 Same visual area for head-to-head mode (basic version; non synchronous) 
 Basic statistics showing words-per-minute after they finish typing whatever passage is generated
-P1
+
+#P1
 Leaderboards
 Daily, weekly, monthly, yearly, all-time
 Addendum to statistics post passage, showing mistakes & accuracy.
@@ -49,7 +53,8 @@ Profile
 Able to view their fastest wpm
 History of scores
 Average wpm (all-time + over specific time-period)
-P2
+
+#P2
 Change color scheme of the site
 In case of P2 head-to-head, adjust visibility of other person
 Engineering Requirements
