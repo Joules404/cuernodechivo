@@ -37,8 +37,10 @@ const Body = function () {
       })
 
   },[numberOfDesiredWords,newWords])
+  const characters = randomWords.length;
   var correct = 0;
   var incorrect = 0;
+  var total = 0;
   useEffect(() => {
     const words = inputValue.trim().split(/\s+/);
     setWordCount(words.length);
@@ -52,6 +54,7 @@ const Body = function () {
     setTimeLeft(desiredTime)
     setTimerActive(false)
     setDesiredTime(desiredTime)
+    setFinished(false)
     document.getElementById("words").value='';
     document.getElementById("timer").value='';
   }
@@ -81,11 +84,13 @@ const Body = function () {
     if (duration > 0 && !timerActive) {
       setTimerActive(true);
       setTimeLeft(desiredTime);
+      setFinished(false)
     }
   };
 
   const handleStop = () => {
     setTimerActive(false);
+    setFinished(true)
   };
 
   const updateTimer = (e) => {
@@ -123,14 +128,15 @@ const Body = function () {
         );
       }
     }
+    total = correct + incorrect;
     return elements;
   }
   
 
   return (
     <div class="App">
-      <div class="wrapper">
-        <p><a href='#'>Sign in</a> | <a href='#'>Register</a></p>
+      <div class="wrapper"> 
+         {/* <p><a href='#'>Sign in</a> | <a href='#'>Register</a></p> */}
         <input id = 'words'type="text" placeholder="WORDS (MAX 500)" onInput={(e)=>{
           e.target.value = e.target.value.replace(/[^0-9]/, '')
           if(e.target.value === ''){
@@ -195,9 +201,15 @@ const Body = function () {
       }}>Submit</button>
       </div>
       <div>
-        <p style={{fontSize:"40px"}}>Time Left: {timeLeft}</p>
+        <p style={{fontSize:"40px"}}>Time Left: {timeLeft}s</p>
       </div>
-
+      {finished && (
+        <div>
+          <p style={{fontSize:"30px"}}>Words per Minute: {((total/5)/((desiredTime-timeLeft)/60)).toFixed(2)}</p>
+          <p style={{fontSize:"30px"}}>Accuracy: {((correct)/(total) * 100).toFixed(2)}%</p>
+          <p style={{fontSize:"20px"}}>Total: {total}/{characters}  |  Correct: {correct}  |  Incorrect: {incorrect} </p>
+        </div>
+      )}
     </div>
 
   );
