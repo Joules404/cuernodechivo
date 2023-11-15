@@ -2,23 +2,6 @@
   text-align: center;
 }
 
-.wrapper{
-  margin: 2em;
-}
-
-.custom-textarea{
-  color:#4c4f4d;
-}
-
-.match {
-  color: green; /* Change this to the desired color for matched characters */
-}
-
-.textarea-container{
-  padding: 2em;
-}
-
-
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -53,27 +36,3 @@
     transform: rotate(360deg);
   }
 }
-
-label[for="myTextarea"], textarea {
-  position: relative;
-}
-
-label[for="myTextarea"]::after {
-  content: attr(data-placeholder); /* Set the content to the 'data-placeholder' attribute */
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 5px;
-  pointer-events: none;
-  color: gray;
-  transition: transform 0.2s ease-in-out;
-}
-
-textarea:focus + label[for="myTextarea"]::after {
-  transform: translateY(-1.2em);
-}
-
-textarea:valid + label[for="myTextarea"]::after {
-  display: none;
-}
-
