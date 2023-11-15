@@ -4,6 +4,7 @@
   
   .custom-textarea {
 	color: #4c4f4d;
+	font-size: 18px
   }
   
   .match {
@@ -28,6 +29,7 @@
 	pointer-events: none;
 	color: gray;
 	transition: transform 0.2s ease-in-out;
+	font-size: 18px
   }
   
   textarea:focus + label[for="myTextarea"]::after {
@@ -37,4 +39,28 @@
   textarea:valid + label[for="myTextarea"]::after {
 	display: none;
   }
-  
+
+  /*w3schools goes hard*/
+  button {
+	background-color: rgb(70, 42, 173);
+	border: none;
+	color: white;
+	padding: 8px 16px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	border-radius: 5px;
+	margin: 5px;
+  }
+
+  input {
+	width: 50%;
+	height: 2em;
+	font-size: 16px;
+	margin-bottom: 10px; 
+	padding: 5px; 
+	border: 2px solid rgb(177, 174, 174); 
+	border-radius: 5px;
+	/*box-sizing: border-box;*/
+  }

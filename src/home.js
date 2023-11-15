@@ -132,12 +132,14 @@ const Body = function () {
 		  <input type="text" placeholder="TIME (60 seconds)" onChange={updateTimer} id="timer" onInput={(e)=>{
 			e.target.value = e.target.value.replace(/[^0-9]/, '')
 		  }}></input>
+		  {/*
 		  <input type="text" placeholder={includePunctuation ? 'PUNCTUATION (ON)' : 'PUNCTUATION (OFF)'} readOnly onClick={()=>{
 			setIncludePunctuation(!includePunctuation)
 		  }}></input>
 		  <input type="text" placeholder={includeNumbers ? 'NUMBERS (ON)' : 'NUMBERS (OFF)'} readOnly onClick={()=>{
 			setIncludeNumbers(!includeNumbers)
 		  }}></input>
+		  */}
 		</div>
 	  <div class = "textarea-container">
 		<div
@@ -193,6 +195,8 @@ const Body = function () {
 		  <div>
 			<p style={{fontSize:"30px"}}>Words per Minute: {((total/5)/((desiredTime-timeLeft)/60)).toFixed(2)}</p>
 			<p style={{fontSize:"30px"}}>Accuracy: {((correct)/(total) * 100).toFixed(2)}%</p>
+			{/*<p style={{fontSize:"30px"}}>Net WPM: {(((total/5)-incorrect)/((desiredTime-timeLeft)/60)).toFixed(2)}</p>
+			 	TODO: incorrect formula? fix and use later*/}
 			<p style={{fontSize:"20px"}}>Total: {total}/{characters}  |  Correct: {correct}  |  Incorrect: {incorrect} </p>
 		  </div>
 		)}
