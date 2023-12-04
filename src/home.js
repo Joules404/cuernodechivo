@@ -14,15 +14,31 @@ const Body = function () {
 	const [newWords, setNewWords] = useState(false)
 	const [finished,setFinished] = useState(false)
 	const [randomWords, setRandomWords] = useState('')
-	const [numberOfDesiredWords, setNumberOfDesiredWords] = useState(15)
+	const [numberOfDesiredWords, setNumberOfDesiredWords] = useState(30)
+	const [minWordLength, setMinWordLength] = useState(2);
+	const [maxWordLength, setMaxWordLength] = useState(7);
+
 	useEffect(()=>{
-	  fetch(`https://random-word-api.herokuapp.com/word?number=${numberOfDesiredWords}`)
+		fetch('/words.json')
 		.then((response)=>response.json())
-		.then((data)=>{
-		  setRandomWords(data.join(' '))
+		.then((data) => {
+			const wordsJSON = Object.keys(data);//we need to do this, idk why
+			//filter words on min/max length for difficulty setting
+			const filteredWords = wordsJSON.filter((word) => {
+				const wordLength = word.length;
+				return wordLength >= minWordLength && wordLength <= maxWordLength;
+			  });
+			//shuffle words so it's not the same list each time
+			//shuffle AFTER filtering for performance boost
+			const shuffledWords = filteredWords.sort(() => Math.random() - 0.5);
+			//join up
+			const selectedWords = shuffledWords.slice(0, numberOfDesiredWords);
+			setRandomWords(selectedWords.join(' '));
 		})
-  
-	},[numberOfDesiredWords,newWords])
+		.catch((error) => {
+			console.error('Error fetching JSON:', error);
+		});
+	},[numberOfDesiredWords, newWords, minWordLength, maxWordLength]);
 	const characters = randomWords.length;
 	var correct = 0;
 	var incorrect = 0;
@@ -139,17 +155,34 @@ const Body = function () {
 		  <input type="text" placeholder={includeNumbers ? 'NUMBERS (ON)' : 'NUMBERS (OFF)'} readOnly onClick={()=>{
 			setIncludeNumbers(!includeNumbers)
 		  }}></input>
-		  */}
+		  */}		
+		<div className="difficulty-buttons">
+			<button onClick={() => {
+				setMinWordLength(1);
+				setMaxWordLength(5);
+				setNewWords(!newWords);
+				restart();
+			}}>Easy</button>
+			<button onClick={() => {
+				setMinWordLength(2);
+				setMaxWordLength(7);
+				setNewWords(!newWords);
+				restart();
+			}}>Normal</button>
+			<button onClick={() => {
+				setMinWordLength(5);
+				setMaxWordLength(Infinity);
+				setNewWords(!newWords);
+				restart();
+			}}>Hard</button>
+			</div>
 		</div>
-	  <div class = "textarea-container">
-		<div
-		  className="custom-textarea"
-		  style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}
-		>
-		  {compareTexts(inputValue, randomWords)}
-  
+		<div class = "textarea-container">
+			<div className="custom-textarea"
+			style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }} >
+			{compareTexts(inputValue, randomWords)}
+			</div>
 		</div>
-	  </div>
 		<input
 		  autoComplete='off'
 		  readOnly={readOnly}
@@ -198,9 +231,9 @@ const Body = function () {
 			{/*<p style={{fontSize:"30px"}}>Net WPM: {(((total/5)-incorrect)/((desiredTime-timeLeft)/60)).toFixed(2)}</p>
 			 	TODO: incorrect formula? fix and use later*/}
 			<p style={{fontSize:"20px"}}>Total: {total}/{characters}  |  Correct: {correct}  |  Incorrect: {incorrect} </p>
-		  </div>
+		</div>
 		)}
-	  </div>
+	</div>
   
 	);
   }

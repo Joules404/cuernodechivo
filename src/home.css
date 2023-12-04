@@ -4,11 +4,12 @@
   
   .custom-textarea {
 	color: #4c4f4d;
-	font-size: 18px
+	font-size: 20px;
+	word-spacing: 5px;
   }
   
   .match {
-	color: green; /* Change this to the desired color for matched characters */
+	color: green;
   }
   
   .textarea-container {
@@ -18,11 +19,6 @@
   label[for="myTextarea"],
   textarea {
 	position: relative;
-  }
-  
-  label[for="myTextarea"]::after {
-	content: attr(data-placeholder); /* Set the content to the 'data-placeholder' attribute */
-	position: absolute;
 	top: 0;
 	left: 0;
 	padding: 5px;
@@ -40,7 +36,6 @@
 	display: none;
   }
 
-  /*w3schools goes hard*/
   button {
 	background-color: rgb(70, 42, 173);
 	border: none;
