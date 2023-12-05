@@ -14,7 +14,7 @@ const Body = function () {
 	const [newWords, setNewWords] = useState(false)
 	const [finished,setFinished] = useState(false)
 	const [randomWords, setRandomWords] = useState('')
-	const [numberOfDesiredWords, setNumberOfDesiredWords] = useState(30)
+	const [numberOfDesiredWords, setNumberOfDesiredWords] = useState(60)
 	const [minWordLength, setMinWordLength] = useState(2);
 	const [maxWordLength, setMaxWordLength] = useState(7);
 
@@ -39,6 +39,7 @@ const Body = function () {
 			console.error('Error fetching JSON:', error);
 		});
 	},[numberOfDesiredWords, newWords, minWordLength, maxWordLength]);
+	
 	const characters = randomWords.length;
 	var correct = 0;
 	var incorrect = 0;
