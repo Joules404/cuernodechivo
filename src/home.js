@@ -82,26 +82,26 @@ const Body = function () {
 		const urlParams = new URLSearchParams(window.location.search);
 		const hasSharedLink = !!urlParams.get('numberOfDesiredWords');
 		if (!hasSharedLink) {
-		fetch('/words.json')
-		.then((response)=>response.json())
-		.then((data) => {
-			const wordsJSON = Object.keys(data);//we need to do this, idk why
-			//filter words on min/max length for difficulty setting
-			const filteredWords = wordsJSON.filter((word) => {
-				const wordLength = word.length;
-				return wordLength >= minWordLength && wordLength <= maxWordLength;
-			  });
-			//shuffle words so it's not the same list each time
-			//shuffle AFTER filtering for performance boost
-			const shuffledWords = filteredWords.sort(() => Math.random() - 0.5);
-			//join up
-			const selectedWords = shuffledWords.slice(0, numberOfDesiredWords);
-			setRandomWords(selectedWords.join(' '));
-		})
-		.catch((error) => {
-			console.error('Error fetching JSON:', error);
-		});
-	}
+			fetch('/words.json')
+			.then((response)=>response.json())
+			.then((data) => {
+				const wordsJSON = Object.keys(data);//we need to do this, idk why
+				//filter words on min/max length for difficulty setting
+				const filteredWords = wordsJSON.filter((word) => {
+					const wordLength = word.length;
+					return wordLength >= minWordLength && wordLength <= maxWordLength;
+				});
+				//shuffle words so it's not the same list each time
+				//shuffle AFTER filtering for performance boost
+				const shuffledWords = filteredWords.sort(() => Math.random() - 0.5);
+				//join up
+				const selectedWords = shuffledWords.slice(0, numberOfDesiredWords);
+				setRandomWords(selectedWords.join(' '));
+			})
+			.catch((error) => {
+				console.error('Error fetching JSON:', error);
+			});
+		}
 	},[numberOfDesiredWords, newWords, minWordLength, maxWordLength]);
 	
 	const characters = randomWords.length;
@@ -109,11 +109,17 @@ const Body = function () {
 	var incorrect = 0;
 	var total = 0;
 	useEffect(() => {
-	  const words = inputValue.trim().split(/\s+/);
-	  setWordCount(words.length);
-	  const elements = compareTexts(inputValue, randomWords);
-  }, [inputValue, randomWords]);
-  
+		const words = inputValue.trim().split(/\s+/);
+		setWordCount(words.length);
+		const elements = compareTexts(inputValue, randomWords);
+	}, [inputValue, randomWords]);
+
+	//trigger restart if maxwords/time is changed
+	//also set maxwords to 500 and time cannot be 0 (breaks everything)
+	useEffect(() => {
+		restart();
+	}, [numberOfDesiredWords, desiredTime]);
+
 	const restart = () => {
 	  setInputValue('');
 	  setReadOnly(false)
@@ -122,8 +128,8 @@ const Body = function () {
 	  setTimerActive(false)
 	  setDesiredTime(desiredTime)
 	  setFinished(false)
-	  document.getElementById("words").value='';
-	  document.getElementById("timer").value='';
+	  //document.getElementById("words").value='';
+	  //document.getElementById("timer").value='';
 	}
 	useEffect(() => {
 	  let timerInterval;
@@ -154,6 +160,7 @@ const Body = function () {
 		} else {
 			setNewWords(!newWords);
 			restart();
+			setShowLinkInfo(false)
 		}
 	};
 
@@ -221,54 +228,37 @@ const Body = function () {
 		  <input type="text" placeholder="TIME (60 seconds)" onChange={updateTimer} id="timer" onInput={(e)=>{
 			e.target.value = e.target.value.replace(/[^0-9]/, '')
 		  }}></input>
-		  {/*
-		  <input type="text" placeholder={includePunctuation ? 'PUNCTUATION (ON)' : 'PUNCTUATION (OFF)'} readOnly onClick={()=>{
-			setIncludePunctuation(!includePunctuation)
-		  }}></input>
-		  <input type="text" placeholder={includeNumbers ? 'NUMBERS (ON)' : 'NUMBERS (OFF)'} readOnly onClick={()=>{
-			setIncludeNumbers(!includeNumbers)
-		  }}></input>
-		  */}		
-        {hasSharedLink ? (
-          <div>
-            <button disabled>Easy</button>
-            <button disabled>Normal</button>
-            <button disabled>Hard</button>
-          </div>
-        ) : (
-          <div className="difficulty-buttons">
-            <button
-              onClick={() => {
-                setMinWordLength(1);
-                setMaxWordLength(5);
-                setNewWords(!newWords);
-                restart();
-              }}
-            >
-              Easy
-            </button>
-            <button
-              onClick={() => {
-                setMinWordLength(2);
-                setMaxWordLength(7);
-                setNewWords(!newWords);
-                restart();
-              }}
-            >
-              Normal
-            </button>
-            <button
-              onClick={() => {
-                setMinWordLength(5);
-                setMaxWordLength(Infinity);
-                setNewWords(!newWords);
-                restart();
-              }}
-            >
-              Hard
-            </button>
-          </div>
-        )}
+		{hasSharedLink ? (
+			<div>
+				<button disabled style={{ backgroundColor: 'gray', color: 'white' }}>Easy</button>
+				<button disabled style={{ backgroundColor: 'gray', color: 'white' }}>Normal</button>
+				<button disabled style={{ backgroundColor: 'gray', color: 'white' }}>Hard</button>
+			</div>
+		) : (
+		<div className="difficulty-buttons">
+			<button onClick={() => {
+				setMinWordLength(1);
+				setMaxWordLength(5);
+				setNewWords(!newWords);
+				restart();
+			}}> Easy
+			</button>
+			<button onClick={() => {
+				setMinWordLength(2);
+				setMaxWordLength(7);
+				setNewWords(!newWords);
+				restart();
+			}}> Normal
+			</button>
+			<button onClick={() => {
+				setMinWordLength(5);
+				setMaxWordLength(Infinity);
+				setNewWords(!newWords);
+				restart();
+			}}> Hard
+			</button>
+			</div>
+		)}
 		</div>
 		<div class = "textarea-container">
 			<div className="custom-textarea"
@@ -314,7 +304,7 @@ const Body = function () {
 		<div>
 		  <p style={{fontSize:"40px"}}>Time Left: {timeLeft}s</p>
 		</div>
-		{finished && (
+		{(finished || timeLeft === 0) && sharedWPM == 0 && sharedAccuracy == 0 && (
 		  <div> 
 			<p style={{fontSize:"30px"}}>Words per Minute: {((total/5)/((desiredTime-timeLeft)/60)).toFixed(2)}</p>
 			<p style={{fontSize:"30px"}}>Accuracy: {((correct)/(total) * 100).toFixed(2)}%    {'('}{((correct)/(characters) * 100).toFixed(2)}% of total{')'} </p>
@@ -322,16 +312,22 @@ const Body = function () {
 			 	TODO: incorrect formula? fix and use later*/}
 			<p style={{fontSize:"20px"}}>Total: {total}/{characters}  |  Correct: {correct}  |  Incorrect: {incorrect} </p>
 		</div>
-		)}
-		{(finished || timeLeft===0)  && sharedWPM > 0 && sharedAccuracy > 0 && (
-			<div>
-			<p style={{ fontSize: "30px", color: "red" }}>Shared Stats:</p>
-			<p style={{ fontSize: "20px", color: "red" }}>
-				WPM: {sharedWPM} | Accuracy: {sharedAccuracy}% | {'('}{sharedTotalAccuracy}% of total{')'}
-			</p>
+		)} 
+		{(finished || timeLeft === 0) && sharedWPM > 0 && sharedAccuracy > 0 && (
+			<div style={{ display: 'flex', justifyContent: 'center', minHeight: '40vh'}}>
+				<div>
+					<p style={{ fontSize: '30px' }}>Words per Minute: {((total / 5) / ((desiredTime - timeLeft) / 60)).toFixed(2)}</p>
+					<p style={{ fontSize: '30px' }}>Accuracy: {((correct) / (total) * 100).toFixed(2)}% {'('}{((correct) / (characters) * 100).toFixed(2)}% of total{')'}</p>
+					<p style={{ fontSize: '20px' }}>Total: {total}/{characters}  |  Correct: {correct}  |  Incorrect: {incorrect} </p>
+				</div>
+				<div>
+					<p style={{ fontSize: '30px', color: 'red' }}>Shared Stats:</p>
+					<p style={{ fontSize: '30px', color: 'red' }}>Words per Minute: {sharedWPM.toFixed(2)}</p>
+					<p style={{ fontSize: '30px', color: 'red' }}>Accuracy: {sharedAccuracy}% {'('}{sharedTotalAccuracy}% of total{')'}</p>
+				</div>
 			</div>
 		)}
-		{(finished || timeLeft===0)  && (
+		{(finished || timeLeft===0) && sharedWPM == 0 && sharedAccuracy == 0 && (
 			<div>
 			<button onClick={generateShareableLink}>Generate Shareable Link</button>
 			{showLinkInfo && (
