@@ -9,8 +9,6 @@ const Body = function () {
 	const [readOnly, setReadOnly] = useState(false)
 	const [desiredTime, setDesiredTime] = useState(60); 
 	const [wordCount, setWordCount] = useState(0);
-	const [includePunctuation, setIncludePunctuation] = useState(false)
-	const [includeNumbers, setIncludeNumbers] = useState(false)
 	const [newWords, setNewWords] = useState(false)
 	const [finished,setFinished] = useState(false)
 	const [randomWords, setRandomWords] = useState('')
@@ -75,12 +73,15 @@ const Body = function () {
 	};
 	
 	useEffect(()=>{
-		//attempts to stop the words from pulling. it's no use, it somehow happens anyways on shareable links
-		const homePath = window.location.pathname == '/';
-		if (!homePath) {
+		//stops initial site load from fetching 2-3 times
+		if (isInitialLoadRef.current) {
+			isInitialLoadRef.current = false;
 			return;
 		}
-		if (!shareableLink) {
+		//works better than the shareableLink hook above
+		const urlParams = new URLSearchParams(window.location.search);
+		const hasSharedLink = !!urlParams.get('numberOfDesiredWords');
+		if (!hasSharedLink) {
 		fetch('/words.json')
 		.then((response)=>response.json())
 		.then((data) => {
@@ -101,7 +102,7 @@ const Body = function () {
 			console.error('Error fetching JSON:', error);
 		});
 	}
-	},[numberOfDesiredWords, newWords, minWordLength, maxWordLength, shareableLink]);
+	},[numberOfDesiredWords, newWords, minWordLength, maxWordLength]);
 	
 	const characters = randomWords.length;
 	var correct = 0;
