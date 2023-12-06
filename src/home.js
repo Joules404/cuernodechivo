@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './home.css';
 
 const Body = function () {
@@ -18,7 +18,69 @@ const Body = function () {
 	const [minWordLength, setMinWordLength] = useState(2);
 	const [maxWordLength, setMaxWordLength] = useState(7);
 
+	const [sharedWPM, setSharedWPM] = useState(0);
+  	const [sharedAccuracy, setSharedAccuracy] = useState(0);
+	const [sharedTotalAccuracy, setSharedTotalAccuracy] = useState(0);
+	const [showShareButton, setShowShareButton] = useState(false);
+	const [shareableLink, setShareableLink] = useState('');
+	const [hasSharedLink, setHasSharedLink] = useState(false);
+	const [showLinkInfo, setShowLinkInfo] = useState(false);
+	const isInitialLoadRef = useRef(true);
+
+	//set items in URL that we need to borrow over
+	const generateShareableLink = () => {
+		const params = new URLSearchParams(window.location.search);
+		params.append('numberOfDesiredWords', numberOfDesiredWords);
+		params.append('desiredTime', desiredTime);
+		params.append('minWordLength', minWordLength);
+		params.append('maxWordLength', maxWordLength);
+		params.append('randomWords', encodeURIComponent(randomWords));
+		params.append('wpm', calculateWPM());
+		params.append('accuracy', calculateAccuracy());
+		params.append('totalaccuracy', calculateTotalAccuracy());
+		setShareableLink(`${window.location.origin}?${params.toString()}`);
+		setShowLinkInfo(true)
+	};
+	//set parameters that sharedlinks will carry (ex: stats)
+	useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const sharedNumberOfDesiredWords = parseInt(urlParams.get('numberOfDesiredWords'), 10) || 60;
+		const sharedDesiredTime = parseInt(urlParams.get('desiredTime'), 10) || 60;
+		const sharedMinWordLength = parseInt(urlParams.get('minWordLength'), 10) || 2;
+		const sharedMaxWordLength = parseInt(urlParams.get('maxWordLength'), 10) || 7;
+		const sharedRandomWords = decodeURIComponent(urlParams.get('randomWords')) || '';
+		const sharedWPM = parseFloat(urlParams.get('wpm')) || 0;
+		const sharedAccuracy = parseFloat(urlParams.get('accuracy')) || 0;
+		const sharedTotalAccuracy = parseFloat(urlParams.get('totalaccuracy')) || 0;
+		setHasSharedLink(!!urlParams.get('numberOfDesiredWords'));
+		setNumberOfDesiredWords(sharedNumberOfDesiredWords);
+		setDesiredTime(sharedDesiredTime);
+		setMinWordLength(sharedMinWordLength);
+		setMaxWordLength(sharedMaxWordLength);
+		setRandomWords(sharedRandomWords);
+		setShowShareButton(true); 
+		setSharedWPM(sharedWPM);
+		setSharedAccuracy(sharedAccuracy);
+		setSharedTotalAccuracy(sharedTotalAccuracy);
+	}, []);
+
+	const calculateWPM = () => {
+		return ((total / 5) / ((desiredTime - timeLeft) / 60)).toFixed(2);
+	};
+	const calculateAccuracy = () => {
+		return ((correct / total) * 100).toFixed(2);
+	};
+	const calculateTotalAccuracy = () => {
+		return ((correct)/(characters) * 100).toFixed(2)
+	};
+	
 	useEffect(()=>{
+		//attempts to stop the words from pulling. it's no use, it somehow happens anyways on shareable links
+		const homePath = window.location.pathname == '/';
+		if (!homePath) {
+			return;
+		}
+		if (!shareableLink) {
 		fetch('/words.json')
 		.then((response)=>response.json())
 		.then((data) => {
@@ -38,7 +100,8 @@ const Body = function () {
 		.catch((error) => {
 			console.error('Error fetching JSON:', error);
 		});
-	},[numberOfDesiredWords, newWords, minWordLength, maxWordLength]);
+	}
+	},[numberOfDesiredWords, newWords, minWordLength, maxWordLength, shareableLink]);
 	
 	const characters = randomWords.length;
 	var correct = 0;
@@ -82,7 +145,17 @@ const Body = function () {
 		clearInterval(timerInterval);
 	  };
 	}, [timerActive, timeLeft]);
-  
+
+	//if shared link, generating new words -> back to homepage
+	const generateNewWords = () => {
+		if (hasSharedLink) {
+			window.location.href = '/';
+		} else {
+			setNewWords(!newWords);
+			restart();
+		}
+	};
+
 	const handleStart = () => {
 	  if (duration > 0 && !timerActive) {
 		setTimerActive(true);
@@ -135,12 +208,10 @@ const Body = function () {
 	  return elements;
 	}
 	
-  
 	return (
 	  <div class="App">
 		<div class="wrapper"> 
-		   {/* <p><a href='#'>Sign in</a> | <a href='#'>Register</a></p> */}
-		  <input id = 'words'type="text" placeholder="WORDS (MAX 500)" onInput={(e)=>{
+			<input id = 'words'type="text" placeholder="WORDS (MAX 500)" onInput={(e)=>{
 			e.target.value = e.target.value.replace(/[^0-9]/, '')
 			if(e.target.value === ''){
 			  setNumberOfDesiredWords(30)
@@ -157,26 +228,46 @@ const Body = function () {
 			setIncludeNumbers(!includeNumbers)
 		  }}></input>
 		  */}		
-		<div className="difficulty-buttons">
-			<button onClick={() => {
-				setMinWordLength(1);
-				setMaxWordLength(5);
-				setNewWords(!newWords);
-				restart();
-			}}>Easy</button>
-			<button onClick={() => {
-				setMinWordLength(2);
-				setMaxWordLength(7);
-				setNewWords(!newWords);
-				restart();
-			}}>Normal</button>
-			<button onClick={() => {
-				setMinWordLength(5);
-				setMaxWordLength(Infinity);
-				setNewWords(!newWords);
-				restart();
-			}}>Hard</button>
-			</div>
+        {hasSharedLink ? (
+          <div>
+            <button disabled>Easy</button>
+            <button disabled>Normal</button>
+            <button disabled>Hard</button>
+          </div>
+        ) : (
+          <div className="difficulty-buttons">
+            <button
+              onClick={() => {
+                setMinWordLength(1);
+                setMaxWordLength(5);
+                setNewWords(!newWords);
+                restart();
+              }}
+            >
+              Easy
+            </button>
+            <button
+              onClick={() => {
+                setMinWordLength(2);
+                setMaxWordLength(7);
+                setNewWords(!newWords);
+                restart();
+              }}
+            >
+              Normal
+            </button>
+            <button
+              onClick={() => {
+                setMinWordLength(5);
+                setMaxWordLength(Infinity);
+                setNewWords(!newWords);
+                restart();
+              }}
+            >
+              Hard
+            </button>
+          </div>
+        )}
 		</div>
 		<div class = "textarea-container">
 			<div className="custom-textarea"
@@ -211,32 +302,48 @@ const Body = function () {
 		</input>
 		<br></br>
 		<div class = "wrapper">
-		<button onClick={()=>{
-		  setNewWords(!newWords)
-		  restart()
-  
-		}}>Generate New Words</button>
+		<button onClick={generateNewWords}>Generate New Words</button>
 		<button onClick={restart}>Restart</button>
 		<button onClick={() => {
 		 setReadOnly(true);
 		 handleStop();
+		 
 		}}>Submit</button>
 		</div>
 		<div>
 		  <p style={{fontSize:"40px"}}>Time Left: {timeLeft}s</p>
 		</div>
 		{finished && (
-		  <div>
+		  <div> 
 			<p style={{fontSize:"30px"}}>Words per Minute: {((total/5)/((desiredTime-timeLeft)/60)).toFixed(2)}</p>
-			<p style={{fontSize:"30px"}}>Accuracy: {((correct)/(total) * 100).toFixed(2)}%</p>
+			<p style={{fontSize:"30px"}}>Accuracy: {((correct)/(total) * 100).toFixed(2)}%    {'('}{((correct)/(characters) * 100).toFixed(2)}% of total{')'} </p>
 			{/*<p style={{fontSize:"30px"}}>Net WPM: {(((total/5)-incorrect)/((desiredTime-timeLeft)/60)).toFixed(2)}</p>
 			 	TODO: incorrect formula? fix and use later*/}
 			<p style={{fontSize:"20px"}}>Total: {total}/{characters}  |  Correct: {correct}  |  Incorrect: {incorrect} </p>
 		</div>
 		)}
+		{(finished || timeLeft===0)  && sharedWPM > 0 && sharedAccuracy > 0 && (
+			<div>
+			<p style={{ fontSize: "30px", color: "red" }}>Shared Stats:</p>
+			<p style={{ fontSize: "20px", color: "red" }}>
+				WPM: {sharedWPM} | Accuracy: {sharedAccuracy}% | {'('}{sharedTotalAccuracy}% of total{')'}
+			</p>
+			</div>
+		)}
+		{(finished || timeLeft===0)  && (
+			<div>
+			<button onClick={generateShareableLink}>Generate Shareable Link</button>
+			{showLinkInfo && (
+            <>
+              <p>Share this link with others:</p>
+              <input type="text" readOnly value={shareableLink} />
+            </>
+          )}
+			</div>
+		)}
+
 	</div>
-  
 	);
-  }
-  
+ }
+
 export default Body;
